@@ -17,6 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 //6. Maybe testing
 //7. refactor sbt
 //8. retry and circute breaker
+//9. smart fetching
 object Fetcher extends App {
 
   implicit val sttpBackend = AsyncHttpClientFutureBackend()
