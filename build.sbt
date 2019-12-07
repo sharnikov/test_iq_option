@@ -27,7 +27,8 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client" %% "async-http-client-backend-future" % "2.0.0-RC4",
       "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.7",
       "com.typesafe.akka" %% "akka-stream" % "2.5.20",
-      "io.spray" %% "spray-json" % "1.3.5"
+      "io.spray" %% "spray-json" % "1.3.5",
+      "org.apache.hadoop" % "hadoop-client" % "3.2.1"
     )
   )
 

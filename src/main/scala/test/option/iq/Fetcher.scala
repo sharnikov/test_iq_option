@@ -6,6 +6,10 @@ import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
 import sttp.client._
 import spray.json._
 import JsonParsers._
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,9 +31,12 @@ object Fetcher extends App {
   def writeFile(filename: String, lines: Seq[String]): Unit = {
     val file = new File(filename)
 
-      val bw = new BufferedWriter(new FileWriter(file))
+    val bw = new BufferedWriter(new FileWriter(file))
+    try {
       lines.foreach(bw.write)
+    } finally {
       bw.close()
+    }
   }
 
   def itemsToCsv(items: Seq[Items]): Seq[String] = {
@@ -38,7 +45,7 @@ object Fetcher extends App {
       def dv = value.getOrElse("")
     }
 
-    items.map  { item =>
+    items.map { item =>
       new StringBuilder(f"${item.id};")
         .append(f"${item.premium};")
         .append(f"${item.department.map(_.id).dv};")
@@ -77,8 +84,8 @@ object Fetcher extends App {
     }
   }
 
-  def makeRequest(page: Int)= {
-    println(f"Make request to page $page")
+  def makeRequest(page: Int) = {
+//    println(f"Make request to page $page")
     basicRequest
       .get(uri"https://api.hh.ru/vacancies?area=2&vacancy_search_order=publication_time&per_page=100&page=$page")
       .header("User-Agent", "IQ-Option-Test-App/1.0 (oleg.sharnikov@outlook.com)")
@@ -88,7 +95,7 @@ object Fetcher extends App {
   def getAllItems(requestsResult: Seq[Response[Either[String, String]]]) = {
     requestsResult.map(_.body).flatMap {
       case Right(result) =>
-        print(s"Parsed result $result")
+//        print(s"Parsed result $result")
         result.parseJson.convertTo[Vacancies].items
 
       case Left(shit) =>
@@ -97,15 +104,32 @@ object Fetcher extends App {
     }
   }
 
+  def writeToHdfs(filename: String, lines: Seq[String]) = {
+    val conf = new Configuration()
+    val path = new Path("data.csv")
+    val fs = FileSystem.get(conf)
+    val output = fs.create(path)
+    val writer = new java.io.PrintWriter(output)
+
+    try {
+      lines.foreach(writer.write)
+    } finally {
+      writer.close()
+      fs.close()
+    }
+
+  }
+
   Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
-    requestsResult.foreach(println)
+//    requestsResult.foreach(println)
     println()
 
     val items = getAllItems(requestsResult)
     println("Got items")
     val parsedStrings = itemsToCsv(items)
-    println(s"Csv is ready $parsedStrings")
-    writeFile("new_vacancies.csv", parsedStrings)
+//    println(s"Csv is ready $parsedStrings")
+    writeToHdfs("new_vacancies.csv", parsedStrings)
     println("File is written")
   }
+
 }
