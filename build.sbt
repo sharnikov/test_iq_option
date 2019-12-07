@@ -8,7 +8,8 @@ lazy val commonSettings = Seq(
 
 lazy val assamblySettings = Seq(
   mainClass in assembly := Some("test.option.iq.Fetcher"),
-  assemblyMergeStrategy in assembly := {
+  assemblyJarName in assembly := s"Fetcher.jar",
+    assemblyMergeStrategy in assembly := {
     case x if x.contains("io.netty.versions.properties") => MergeStrategy.discard
     case x =>
       val oldStrategy = (assemblyMergeStrategy in assembly).value
