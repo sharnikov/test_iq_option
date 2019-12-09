@@ -1,15 +1,15 @@
 package test.option.iq
 
 import java.io.{BufferedWriter, File, FileWriter}
+import java.net.URI
 
 import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
 import sttp.client._
 import spray.json._
 import JsonParsers._
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.{FileSystem, LocalFileSystem, Path}
+import org.apache.hadoop.hdfs.DistributedFileSystem
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -106,8 +106,19 @@ object Fetcher extends App {
 
   def writeToHdfs(filename: String, lines: Seq[String]) = {
     val conf = new Configuration()
-    val path = new Path("data.csv")
-    val fs = FileSystem.get(conf)
+    val url = s"hdfs://172.17.0.2:9000/"
+    conf.set("fs.defaultFS", url)
+    conf.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
+    conf.set("fs.file.impl", classOf[LocalFileSystem].getName)
+
+    System.setProperty("HADOOP_USER_NAME", "root")
+    System.setProperty("hadoop.home.dir", "/")
+
+    val path = new Path(s"/$filename")
+    val fs = FileSystem.get(URI.create(url), conf)
+
+
+
     val output = fs.create(path)
     val writer = new java.io.PrintWriter(output)
 
@@ -117,6 +128,15 @@ object Fetcher extends App {
       writer.close()
       fs.close()
     }
+
+    println("File is written")
+//
+//    import org.apache.commons.io.IOUtils
+//
+//    val inputStream = fs.open(path)
+//    val out = IOUtils.toString(inputStream, "UTF-8")
+//    print(out)
+//    inputStream.close()
 
   }
 
@@ -128,8 +148,10 @@ object Fetcher extends App {
     println("Got items")
     val parsedStrings = itemsToCsv(items)
 //    println(s"Csv is ready $parsedStrings")
-    writeToHdfs("new_vacancies.csv", parsedStrings)
-    println("File is written")
+    writeToHdfs("data.csv", parsedStrings)
   }
+
+
+
 
 }
