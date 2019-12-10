@@ -85,7 +85,6 @@ object Fetcher extends App {
   }
 
   def makeRequest(page: Int) = {
-//    println(f"Make request to page $page")
     basicRequest
       .get(uri"https://api.hh.ru/vacancies?area=2&vacancy_search_order=publication_time&per_page=100&page=$page")
       .header("User-Agent", "IQ-Option-Test-App/1.0 (oleg.sharnikov@outlook.com)")
@@ -95,7 +94,6 @@ object Fetcher extends App {
   def getAllItems(requestsResult: Seq[Response[Either[String, String]]]) = {
     requestsResult.map(_.body).flatMap {
       case Right(result) =>
-//        print(s"Parsed result $result")
         result.parseJson.convertTo[Vacancies].items
 
       case Left(shit) =>
@@ -118,7 +116,6 @@ object Fetcher extends App {
     val fs = FileSystem.get(URI.create(url), conf)
 
 
-
     val output = fs.create(path)
     val writer = new java.io.PrintWriter(output)
 
@@ -130,28 +127,13 @@ object Fetcher extends App {
     }
 
     println("File is written")
-//
-//    import org.apache.commons.io.IOUtils
-//
-//    val inputStream = fs.open(path)
-//    val out = IOUtils.toString(inputStream, "UTF-8")
-//    print(out)
-//    inputStream.close()
 
   }
 
   Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
-//    requestsResult.foreach(println)
-    println()
-
     val items = getAllItems(requestsResult)
     println("Got items")
     val parsedStrings = itemsToCsv(items)
-//    println(s"Csv is ready $parsedStrings")
     writeToHdfs("data.csv", parsedStrings)
   }
-
-
-
-
 }
