@@ -13,7 +13,6 @@ salary_currency
 salary_gross
 type
 
-adress_city
 adress_street
 adress_building
 adress_description
@@ -34,3 +33,60 @@ alternate_url
 
 snippet_requirement
 snippet_responsibility
+
+
+Selects:
+1. average/min/max gross/not gross salary
+2. (open/closed) jobs for period
+
+1. Amount of companies with open positions
+2. Just companies data
+
+create table VACANCIES(
+    id TEXT not null,
+    premium boolean not null,
+    name TEXT NOT NULL,
+    department_id TEXT,
+    department_name TEXT,
+    has_test BOOLEAN NOT NULL,
+    response_letter_required BOOLEAN NOT NULL,
+    area_id TEXT NOT NULL,
+    area_name TEXT NOT NULL,
+    salary_from INTEGER,
+    salary_to INTEGER,
+    salary_currency TEXT NOT NULL,
+    salary_gross BOOLEAN,
+    type BOOLEAN NOT NULL,
+    employer_id TEXT,
+    employer_name TEXT,
+    created_at DATE,
+    url TEXT NOT NULL,
+    alternate_url TEXT NOT NULL,
+    snippet_requirement TEXT,
+    snippet_responsibility TEXT
+);
+
+create table EMPLOYERS(
+    adress_street TEXT,
+    adress_building TEXT,
+    adress_description TEXT,
+    adress_lat REAL,
+    adress_lng REAL,
+    adress_raw TEXT,
+    adress_id TEXT,
+    employer_id TEXT NOT NULL,
+    employer_name TEXT,
+    employer_url TEXT,
+    employer_vacancies_url TEXT,
+    employer_trusted BOOLEAN,
+    has_open BOOLEAN
+);
+
+create index vacancies_date_index on VACANCIES(created_at);
+cluster vacancies using vacancies_date_index;
+create index vacancy_type_index on VACANCIES using hash (type);
+alter table VACANCIES add primary key (id);
+
+alter table EMPLOYERS add primary key (employer_id);
+
+

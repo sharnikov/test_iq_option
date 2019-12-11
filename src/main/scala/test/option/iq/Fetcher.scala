@@ -58,9 +58,7 @@ object Fetcher extends App {
         .append(f"${item.salary.flatMap(_.to).dv};")
         .append(f"${item.salary.map(_.currency).dv};")
         .append(f"${item.salary.flatMap(_.gross).dv};")
-        .append(f"${item.`type`.id};")
 
-        .append(f"${item.address.flatMap(_.city).dv};")
         .append(f"${item.address.flatMap(_.street).dv};")
         .append(f"${item.address.flatMap(_.building).dv};")
         .append(f"${item.address.flatMap(_.description).dv};")
@@ -126,14 +124,13 @@ object Fetcher extends App {
       fs.close()
     }
 
-    println("File is written")
-
   }
 
   Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
     val items = getAllItems(requestsResult)
     println("Got items")
     val parsedStrings = itemsToCsv(items)
-    writeToHdfs("data.csv", parsedStrings)
+    writeFile("data.csv", parsedStrings)
+    println("File is written")
   }
 }

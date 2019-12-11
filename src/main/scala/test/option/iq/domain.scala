@@ -8,9 +8,6 @@ case class Salary(from: Option[Double],
                   currency: String,
                   gross: Option[Boolean])
 
-case class TypeBis(id: String,
-                   name: String)
-
 case class Employer(id: Option[String],
                     name: Option[String],
                     url: Option[String],
@@ -20,8 +17,7 @@ case class Employer(id: Option[String],
 case class Snippet(requirement: Option[String],
                    responsibility: Option[String])
 
-case class Address(city: Option[String],
-                   street: Option[String],
+case class Address(street: Option[String],
                    building: Option[String],
                    description: Option[String],
                    lat: Option[Double],
@@ -29,7 +25,8 @@ case class Address(city: Option[String],
                    raw: Option[String],
                    id: Option[String])
 
-case class Department(id: String, name: String)
+case class Department(id: String,
+                      name: String)
 
 case class Items(id: String,
                  premium: Boolean,
@@ -39,7 +36,6 @@ case class Items(id: String,
                  response_letter_required: Boolean,
                  area: Area,
                  salary: Option[Salary],
-                 `type`: TypeBis,
                  address: Option[Address],
                  employer: Employer,
                  created_at: String,
