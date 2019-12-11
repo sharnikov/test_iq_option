@@ -56,7 +56,7 @@ create table VACANCIES(
     salary_to INTEGER,
     salary_currency TEXT NOT NULL,
     salary_gross BOOLEAN,
-    type BOOLEAN NOT NULL,
+    is_open BOOLEAN NOT NULL,
     employer_id TEXT,
     employer_name TEXT,
     created_at DATE,
@@ -84,7 +84,7 @@ create table EMPLOYERS(
 
 create index vacancies_date_index on VACANCIES(created_at);
 cluster vacancies using vacancies_date_index;
-create index vacancy_type_index on VACANCIES using hash (type);
+create index vacancy_type_index on VACANCIES using hash (is_open);
 alter table VACANCIES add primary key (id);
 
 alter table EMPLOYERS add primary key (employer_id);
