@@ -90,3 +90,54 @@ alter table VACANCIES add primary key (id);
 alter table EMPLOYERS add primary key (employer_id);
 
 
+insert into vacancies(
+id,
+premium,
+name,
+department_id,
+department_name,
+has_test,
+response_letter_required,
+area_id,
+area_name,
+salary_from,
+salary_to,
+salary_currency,
+salary_gross,
+type,
+employer_id,
+employer_name,
+created_at,
+snippet_requirement,
+snippet_responsibility,
+url,
+alternate_url)
+values (
+'14',
+false,
+'Вакашка',
+'123',
+'Gos_Dep',
+false,
+ true,
+ '2',
+ 'CPb',
+ 70000,
+ 200000,
+ 'RUR',
+ false,
+ false,
+ '345',
+ 'JPMorgan',
+ '2019-12-08',
+ 't',
+ 'tt',
+ 'url',
+ 'alt_url')
+
+
+
+
+
+
+
