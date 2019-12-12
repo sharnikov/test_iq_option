@@ -83,8 +83,11 @@ create table EMPLOYERS(
 
 create index vacancies_date_index on VACANCIES(created_at);
 cluster vacancies using vacancies_date_index;
-create index vacancy_type_index on VACANCIES using hash (is_open);
+
+create index vacancy_is_open_index on VACANCIES using hash (is_open);
+
 alter table VACANCIES add primary key (id);
+create index vacancy_id_index on VACANCIES using hash (id);
 
 ALTER TABLE vacancies ALTER COLUMN is_open SET DEFAULT true;
 
