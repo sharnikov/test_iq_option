@@ -53,7 +53,7 @@ create table VACANCIES(
     area_name TEXT NOT NULL,
     salary_from INTEGER,
     salary_to INTEGER,
-    salary_currency TEXT NOT NULL,
+    salary_currency TEXT,
     salary_gross BOOLEAN,
     is_open BOOLEAN NOT NULL,
     employer_id TEXT,

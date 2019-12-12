@@ -30,12 +30,10 @@ object Fetcher extends App {
   implicit val context = ExecutionContext.fromExecutor(java.util.concurrent.Executors.newWorkStealingPool())
 
   def writeFile(filename: String, lines: Seq[String]): Unit = {
-    val header = getCvsHeader().mkString(";")
     val file = new File(filename)
     val bw = new BufferedWriter(new FileWriter(file))
 
     try {
-      bw.write(header)
       lines.foreach(bw.write)
     } finally {
       bw.close()

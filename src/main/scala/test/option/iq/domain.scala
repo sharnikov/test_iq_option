@@ -5,7 +5,7 @@ case class Area(id: String,
 
 case class Salary(from: Option[Double],
                   to: Option[Double],
-                  currency: String,
+                  currency: Option[String],
                   gross: Option[Boolean])
 
 case class Employer(id: Option[String],
