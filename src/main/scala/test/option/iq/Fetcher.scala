@@ -7,6 +7,7 @@ import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
 import sttp.client._
 import spray.json._
 import JsonParsers._
+import Utils.getCvsHeader
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, LocalFileSystem, Path}
 import org.apache.hadoop.hdfs.DistributedFileSystem
@@ -112,12 +113,13 @@ object Fetcher extends App {
 
     val path = new Path(s"/$filename")
     val fs = FileSystem.get(URI.create(url), conf)
-
-
     val output = fs.create(path)
     val writer = new java.io.PrintWriter(output)
 
+    val header = getCvsHeader().mkString(";")
+
     try {
+      writer.write(header)
       lines.foreach(writer.write)
     } finally {
       writer.close()
