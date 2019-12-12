@@ -17,7 +17,6 @@ object Utils {
       "salary_to",
       "salary_currency",
       "salary_gross",
-      "is_open",
       "adress_street",
       "adress_building",
       "adress_description",

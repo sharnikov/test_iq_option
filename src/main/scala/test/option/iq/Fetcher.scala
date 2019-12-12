@@ -30,10 +30,12 @@ object Fetcher extends App {
   implicit val context = ExecutionContext.fromExecutor(java.util.concurrent.Executors.newWorkStealingPool())
 
   def writeFile(filename: String, lines: Seq[String]): Unit = {
+    val header = getCvsHeader().mkString(";")
     val file = new File(filename)
-
     val bw = new BufferedWriter(new FileWriter(file))
+
     try {
+      bw.write(header)
       lines.foreach(bw.write)
     } finally {
       bw.close()
@@ -49,6 +51,7 @@ object Fetcher extends App {
     items.map { item =>
       new StringBuilder(f"${item.id};")
         .append(f"${item.premium};")
+        .append(f"${item.name};")
         .append(f"${item.department.map(_.id).dv};")
         .append(f"${item.department.map(_.name).dv};")
         .append(f"${item.has_test};")
@@ -78,7 +81,7 @@ object Fetcher extends App {
         .append(f"${item.url};")
         .append(f"${item.alternate_url};")
         .append(f"${item.snippet.requirement.dv};")
-        .append(f"${item.snippet.responsibility.dv};")
+        .append(f"${item.snippet.responsibility.dv}")
         .append("\n").toString()
     }
   }
@@ -107,12 +110,12 @@ object Fetcher extends App {
     conf.set("fs.defaultFS", url)
     conf.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
     conf.set("fs.file.impl", classOf[LocalFileSystem].getName)
+    val fs = FileSystem.get(URI.create(url), conf)
 
     System.setProperty("HADOOP_USER_NAME", "root")
     System.setProperty("hadoop.home.dir", "/")
 
     val path = new Path(s"/$filename")
-    val fs = FileSystem.get(URI.create(url), conf)
     val output = fs.create(path)
     val writer = new java.io.PrintWriter(output)
 

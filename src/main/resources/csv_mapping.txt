@@ -11,7 +11,6 @@ salary_from
 salary_to
 salary_currency
 salary_gross
-type
 
 adress_street
 adress_building
@@ -86,6 +85,8 @@ create index vacancies_date_index on VACANCIES(created_at);
 cluster vacancies using vacancies_date_index;
 create index vacancy_type_index on VACANCIES using hash (is_open);
 alter table VACANCIES add primary key (id);
+
+ALTER TABLE vacancies ALTER COLUMN is_open SET DEFAULT true;
 
 alter table EMPLOYERS add primary key (employer_id);
 
