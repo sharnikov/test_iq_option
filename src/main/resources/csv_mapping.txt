@@ -78,14 +78,14 @@ alter table vacancies alter column is_open set default true;
 
 
 create table employers(
+    adress_id TEXT NOT NULL,
+    employer_id TEXT NOT NULL,
     adress_street TEXT,
     adress_building TEXT,
     adress_description TEXT,
     adress_lat REAL,
     adress_lng REAL,
     adress_raw TEXT,
-    adress_id TEXT NOT NULL,
-    employer_id TEXT NOT NULL,
     employer_name TEXT,
     employer_url TEXT,
     employer_vacancies_url TEXT,
@@ -94,8 +94,8 @@ create table employers(
 );
 
 alter table employers add primary key (employer_id, adress_id);
-create index employer_id_index on employers(employer_id);
-cluster employers using employer_id_index;
+create index employer_index on employers(employer_id, adress_id);
+cluster employers using employer_index;
 alter table employers alter column has_open set default true;
 
 create index employers_has_open_index on employers(has_open);
