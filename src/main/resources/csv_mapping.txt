@@ -56,6 +56,7 @@ create table VACANCIES(
     salary_currency TEXT,
     salary_gross BOOLEAN,
     is_open BOOLEAN NOT NULL,
+    adress_id TEXT,
     employer_id TEXT,
     employer_name TEXT,
     created_at DATE,
@@ -68,22 +69,22 @@ create table VACANCIES(
 create index vacancies_date_index on vacancies(created_at);
 cluster vacancies using vacancies_date_index;
 
-create index vacancy_is_open_index on vacancies using hash (is_open);
-create index vacancy_id_index on vacancies using hash (id);
+create index vacancy_is_open_index on vacancies(is_open);
+create index vacancy_id_index on vacancies(id);
 
 alter table vacancies add primary key (id);
 
 alter table vacancies alter column is_open set default true;
 
 
-create table EMPLOYERS(
+create table employers(
     adress_street TEXT,
     adress_building TEXT,
     adress_description TEXT,
     adress_lat REAL,
     adress_lng REAL,
     adress_raw TEXT,
-    adress_id TEXT,
+    adress_id TEXT NOT NULL,
     employer_id TEXT NOT NULL,
     employer_name TEXT,
     employer_url TEXT,
@@ -92,12 +93,12 @@ create table EMPLOYERS(
     has_open BOOLEAN
 );
 
-alter table employers add primary key (employer_id);
+alter table employers add primary key (employer_id, adress_id);
 create index employer_id_index on employers(employer_id);
 cluster employers using employer_id_index;
 alter table employers alter column has_open set default true;
 
-create index employers_has_open_index on employers using hash (has_open);
+create index employers_has_open_index on employers(has_open);
 
 insert into vacancies(
 id,
