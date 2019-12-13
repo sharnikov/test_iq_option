@@ -65,6 +65,16 @@ create table VACANCIES(
     snippet_responsibility TEXT
 );
 
+create index vacancies_date_index on vacancies(created_at);
+cluster vacancies using vacancies_date_index;
+
+create index vacancy_is_open_index on vacancies using hash (is_open);
+create index vacancy_id_index on vacancies using hash (id);
+
+alter table vacancies add primary key (id);
+
+ALTER TABLE vacancies ALTER COLUMN is_open SET DEFAULT true;
+
 create table EMPLOYERS(
     adress_street TEXT,
     adress_building TEXT,
@@ -81,17 +91,9 @@ create table EMPLOYERS(
     has_open BOOLEAN
 );
 
-create index vacancies_date_index on VACANCIES(created_at);
-cluster vacancies using vacancies_date_index;
-
-create index vacancy_is_open_index on VACANCIES using hash (is_open);
-
-alter table VACANCIES add primary key (id);
-create index vacancy_id_index on VACANCIES using hash (id);
-
-ALTER TABLE vacancies ALTER COLUMN is_open SET DEFAULT true;
-
-alter table EMPLOYERS add primary key (employer_id);
+alter table employers add primary key (employer_id);
+create index employer_id_index on employers(employer_id);
+cluster employers using employer_id_index;
 
 
 insert into vacancies(
