@@ -73,7 +73,8 @@ create index vacancy_id_index on vacancies using hash (id);
 
 alter table vacancies add primary key (id);
 
-ALTER TABLE vacancies ALTER COLUMN is_open SET DEFAULT true;
+alter table vacancies alter column is_open set default true;
+
 
 create table EMPLOYERS(
     adress_street TEXT,
@@ -94,7 +95,9 @@ create table EMPLOYERS(
 alter table employers add primary key (employer_id);
 create index employer_id_index on employers(employer_id);
 cluster employers using employer_id_index;
+alter table employers alter column has_open set default true;
 
+create index employers_has_open_index on employers using hash (has_open);
 
 insert into vacancies(
 id,
