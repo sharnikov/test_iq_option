@@ -25,4 +25,6 @@ class AppSettings extends Settings {
   override def buildHdfsFilePath(): Path = {
     new Path("/data.csv")
   }
+
+  override def config(): Config = new AppConfig()
 }

@@ -16,7 +16,7 @@ trait FetchTaskFactory {
     def getFetchTask(): FetchTask
 }
 
-class VacanciesFetchTaskFactory(setting: Settings) extends FetchTaskFactory
+class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
     with MainContext
     with CsvConverter
     with FilesWriter {
@@ -53,8 +53,8 @@ class VacanciesFetchTaskFactory(setting: Settings) extends FetchTaskFactory
 
   private def makeRequest(page: Int) = {
     basicRequest
-      .get(uri"https://api.hh.ru/vacancies?area=2&vacancy_search_order=publication_time&per_page=100&page=$page")
-      .header("User-Agent", "IQ-Option-Test-App/1.0 (oleg.sharnikov@outlook.com)")
+      .get(uri"${settings.config().hh().userAgentHeader()}$page")
+      .header("User-Agent", settings.config().hh().userAgentHeader())
       .send()
   }
 
