@@ -14,7 +14,7 @@ class AppSettings extends Settings {
 
   override def buildHdfsConfiguration(): Configuration = {
     val conf = new Configuration()
-    val url = s"hdfs://172.17.0.2:9000/"
+    val url = "hdfs://172.17.0.2:9000/"
     conf.set("fs.defaultFS", url)
     conf.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
     conf.set("fs.file.impl", classOf[LocalFileSystem].getName)
