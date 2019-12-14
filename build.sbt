@@ -18,7 +18,6 @@ lazy val assamblySettings = Seq(
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     commonSettings,
     assamblySettings,

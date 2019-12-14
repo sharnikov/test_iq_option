@@ -16,15 +16,12 @@ import test.option.iq.settings.{AppSettings, Settings}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+//0. set system property
 //1. Add config
-//2. Separate all the shit
-//3. Close all what should be closed
-//4. Run every "period of time"
-//5. Logging
-//6. Maybe testing
-//7. refactor sbt
-//8. retry and circute breaker
-//9. smart fetching
+//2. Close all what should be closed
+//3. Logging
+//4. retry and circute breaker
+//5. smart fetching
 object Fetcher extends App {
 
   System.setProperty("HADOOP_USER_NAME", "root")
