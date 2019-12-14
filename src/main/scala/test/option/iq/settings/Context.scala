@@ -1,4 +1,4 @@
-package test.option.iq
+package test.option.iq.settings
 
 import java.util.concurrent.ExecutorService
 

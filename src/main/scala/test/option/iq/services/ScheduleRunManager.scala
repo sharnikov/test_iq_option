@@ -1,6 +1,6 @@
-package test.option.iq
+package test.option.iq.services
 
-import test.option.iq.FetchTaskFactory.FetchTask
+import test.option.iq.services.FetchTaskFactory.FetchTask
 
 trait ScheduleRunManager {
   def runTask(task: FetchTask): Unit

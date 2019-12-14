@@ -1,4 +1,4 @@
-package test.option.iq
+package test.option.iq.services
 
 import java.io.{BufferedWriter, File, FileWriter}
 import java.net.URI
@@ -7,12 +7,12 @@ import java.util.concurrent.TimeUnit
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, LocalFileSystem, Path}
 import org.apache.hadoop.hdfs.DistributedFileSystem
-import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
-import sttp.client.{Response, basicRequest}
-import sttp.client._
 import spray.json._
-import JsonParsers._
-import test.option.iq.FetchTaskFactory.FetchTask
+import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
+import sttp.client.{Response, basicRequest, _}
+import test.option.iq.services.FetchTaskFactory.FetchTask
+import test.option.iq.settings.MainContext
+import test.option.iq.{Items, Vacancies}
 
 import scala.concurrent.Future
 
@@ -27,6 +27,7 @@ class VacanciesFetchTaskFactory extends FetchTaskFactory with MainContext {
   override def getFetchTask(): FetchTask = {
     val task = new Runnable {
       override def run(): Unit = {
+
         def writeFile(filename: String, lines: Seq[String]): Unit = {
           val file = new File(filename)
           val bw = new BufferedWriter(new FileWriter(file))

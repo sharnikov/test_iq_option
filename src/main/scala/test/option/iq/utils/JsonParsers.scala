@@ -1,7 +1,8 @@
-package test.option.iq
+package test.option.iq.utils
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
+import test.option.iq._
 
 object JsonParsers extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val areaFormat = jsonFormat2(Area)
