@@ -12,6 +12,7 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, LocalFileSystem, Path}
 import org.apache.hadoop.hdfs.DistributedFileSystem
 import test.option.iq.services.{SimpleScheduleRunManager, VacanciesFetchTaskFactory}
+import test.option.iq.settings.{AppSettings, Settings}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,7 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 //9. smart fetching
 object Fetcher extends App {
 
-  val fetchTaskFactory = new VacanciesFetchTaskFactory()
+  System.setProperty("HADOOP_USER_NAME", "root")
+  System.setProperty("hadoop.home.dir", "/")
+
+  val settings: Settings = new AppSettings()
+  val fetchTaskFactory = new VacanciesFetchTaskFactory(settings)
   val task = fetchTaskFactory.getFetchTask()
 
   val scheduleRunManager = new SimpleScheduleRunManager()

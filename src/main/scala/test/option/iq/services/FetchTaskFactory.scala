@@ -11,7 +11,9 @@ import spray.json._
 import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
 import sttp.client.{Response, basicRequest, _}
 import test.option.iq.services.FetchTaskFactory.FetchTask
-import test.option.iq.settings.MainContext
+import test.option.iq.settings.{MainContext, Settings}
+import test.option.iq.utils.CsvConverter
+import test.option.iq.utils.JsonParsers._
 import test.option.iq.{Items, Vacancies}
 
 import scala.concurrent.Future
@@ -20,68 +22,17 @@ trait FetchTaskFactory {
     def getFetchTask(): FetchTask
 }
 
-class VacanciesFetchTaskFactory extends FetchTaskFactory with MainContext {
+class VacanciesFetchTaskFactory(setting: Settings) extends FetchTaskFactory
+    with MainContext
+    with CsvConverter
+    with FilesWriter {
 
   private implicit val sttpBackend = AsyncHttpClientFutureBackend()
 
   override def getFetchTask(): FetchTask = {
+
     val task = new Runnable {
       override def run(): Unit = {
-
-        def writeFile(filename: String, lines: Seq[String]): Unit = {
-          val file = new File(filename)
-          val bw = new BufferedWriter(new FileWriter(file))
-
-          try {
-            lines.foreach(bw.write)
-          } finally {
-            bw.close()
-          }
-        }
-
-        def itemsToCsv(items: Seq[Items]): Seq[String] = {
-
-          implicit class DefValue[T](value: Option[T]) {
-            def dv = value.getOrElse("")
-          }
-
-          items.map { item =>
-            new StringBuilder(f"${item.id};")
-              .append(f"${item.premium};")
-              .append(f"${item.name};")
-              .append(f"${item.department.map(_.id).dv};")
-              .append(f"${item.department.map(_.name).dv};")
-              .append(f"${item.has_test};")
-              .append(f"${item.response_letter_required};")
-              .append(f"${item.area.id};")
-              .append(f"${item.area.name};")
-              .append(f"${item.salary.flatMap(_.from).dv};")
-              .append(f"${item.salary.flatMap(_.to).dv};")
-              .append(f"${item.salary.map(_.currency).dv};")
-              .append(f"${item.salary.flatMap(_.gross).dv};")
-
-              .append(f"${item.address.flatMap(_.street).dv};")
-              .append(f"${item.address.flatMap(_.building).dv};")
-              .append(f"${item.address.flatMap(_.description).dv};")
-              .append(f"${item.address.flatMap(_.lat).dv};")
-              .append(f"${item.address.flatMap(_.lng).dv};")
-              .append(f"${item.address.flatMap(_.raw).dv};")
-              .append(f"${item.address.flatMap(_.id).dv};")
-
-              .append(f"${item.employer.id.dv};")
-              .append(f"${item.employer.name.dv};")
-              .append(f"${item.employer.url.dv};")
-              .append(f"${item.employer.vacancies_url.dv};")
-              .append(f"${item.employer.trusted.dv};")
-
-              .append(f"${item.created_at};")
-              .append(f"${item.url};")
-              .append(f"${item.alternate_url};")
-              .append(f"${item.snippet.requirement.dv};")
-              .append(f"${item.snippet.responsibility.dv}")
-              .append("\n").toString()
-          }
-        }
 
         def makeRequest(page: Int) = {
           basicRequest
@@ -101,36 +52,17 @@ class VacanciesFetchTaskFactory extends FetchTaskFactory with MainContext {
           }
         }
 
-        def writeToHdfs(filename: String, lines: Seq[String]) = {
-          val conf = new Configuration()
-          val url = s"hdfs://172.17.0.2:9000/"
-          conf.set("fs.defaultFS", url)
-          conf.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
-          conf.set("fs.file.impl", classOf[LocalFileSystem].getName)
-          val fs = FileSystem.get(URI.create(url), conf)
-
-          System.setProperty("HADOOP_USER_NAME", "root")
-          System.setProperty("hadoop.home.dir", "/")
-
-          val path = new Path(s"/$filename")
-          val output = fs.create(path)
-          val writer = new java.io.PrintWriter(output)
-
-
-          try {
-            lines.foreach(writer.write)
-          } finally {
-            writer.close()
-            fs.close()
-          }
-
-        }
-
         Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
           val items = getAllItems(requestsResult)
           println("Got items")
-          val parsedStrings = itemsToCsv(items)
-          writeFile("data.csv", parsedStrings)
+          val csvLines = itemsToCsv(items)
+//          writeToHdfs(
+//            linesToWrite=csvLines,
+//            path=setting.buildHdfsFilePath(),
+//            configuration=setting.buildHdfsConfiguration()
+//          )
+
+          writeFile("data.csv", csvLines)
           println("File is written")
         }
       }
