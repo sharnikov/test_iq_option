@@ -22,6 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
 //3. Logging
 //4. retry and circute breaker
 //5. smart fetching
+//6. exceptions
 object Fetcher extends App {
 
   System.setProperty("HADOOP_USER_NAME", "root")

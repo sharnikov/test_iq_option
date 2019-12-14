@@ -34,12 +34,21 @@ snippet_requirement
 snippet_responsibility
 
 
-Selects:
-1. average/min/max gross/not gross salary
-2. (open/closed) jobs for period
+Vac:
+- select min/max/avg(salary_from/salary_to) from vacancies where [is_open = true/false] and salary_gross = true/false and
+salary_from/salary_to is not null [and date between (date1, date2)] and currency = RUB/EUR/USD [group by id];
 
-1. Amount of companies with open positions
-2. Just companies data
+- select min/max/avg(
+case when(currency is 'RUB') THEN salary_from/salary_to ELSE (
+    case when(currency is 'EUR') THEN salary_from/salary_to*70 ELSE salary_from/salary_to*60
+    END;
+) END;
+) from vacancies where [is_open = true/false] and salary_gross = true/false and
+salary_from/salary_to is not null and currency in ('RUB', 'USD', 'EUR') [and date between (date1, date2)] [group by id];
+
+- select count(*) from vacancies from vacancies [where is_open = true] [and date between (date1, date2)] group by id
+- select * from vacancies from vacancies where is_open = true [and date between (date1, date2)]
+
 
 create table VACANCIES(
     id TEXT not null,
