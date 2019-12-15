@@ -1,20 +1,7 @@
 package test.option.iq
 
-import java.io.{BufferedWriter, File, FileWriter}
-import java.net.URI
-import java.util.concurrent.TimeUnit
-
-import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
-import sttp.client._
-import spray.json._
-import test.option.iq.utils.JsonParsers._
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.{FileSystem, LocalFileSystem, Path}
-import org.apache.hadoop.hdfs.DistributedFileSystem
 import test.option.iq.services.{SimpleScheduleRunManager, VacanciesFetchTaskFactory}
 import test.option.iq.settings.{AppSettings, Settings}
-
-import scala.concurrent.{ExecutionContext, Future}
 
 //0. set system property
 //1. Add config

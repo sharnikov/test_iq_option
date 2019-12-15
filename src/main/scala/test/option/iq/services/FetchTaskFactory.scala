@@ -30,7 +30,6 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
         println("Start fetching")
         Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
           val items = extractItems(requestsResult)
-          println(items)
           val csvLines = itemsToCsv(items)
           writeToHdfs(
             linesToWrite=csvLines,
@@ -39,7 +38,7 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
           )
 
 //          writeFile("data.csv", csvLines)
-          println("File is written")
+          println(s"File is written time is ${System.currentTimeMillis()}")
         }
       }
     }
