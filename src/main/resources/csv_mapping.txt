@@ -69,8 +69,8 @@ create table VACANCIES(
     employer_id TEXT,
     employer_name TEXT,
     created_at DATE,
-    url TEXT NOT NULL,
-    alternate_url TEXT NOT NULL,
+    url TEXT,
+    alternate_url TEXT,
     snippet_requirement TEXT,
     snippet_responsibility TEXT
 );

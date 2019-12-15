@@ -39,8 +39,8 @@ case class Items(id: String,
                  address: Option[Address],
                  employer: Employer,
                  created_at: String,
-                 url: String,
-                 alternate_url: String,
+                 url: Option[String],
+                 alternate_url: Option[String],
                  snippet: Snippet)
 
 case class Vacancies(items: List[Items],

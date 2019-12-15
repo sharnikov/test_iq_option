@@ -45,8 +45,8 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
 
     FetchTask(
       task = task,
-      firstDelayTime = 0,
-      repeateRate = 20,
+      firstDelayTime = 30,
+      repeateRate = 30,
       TimeUnit.SECONDS
     )
 
