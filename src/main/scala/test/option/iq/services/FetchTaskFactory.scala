@@ -27,16 +27,18 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
 
     val task = new Runnable {
       override def run(): Unit = {
+        println("Start fetching")
         Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
           val items = extractItems(requestsResult)
+          println(items)
           val csvLines = itemsToCsv(items)
-//          writeToHdfs(
-//            linesToWrite=csvLines,
-//            path=setting.buildHdfsFilePath(),
-//            configuration=setting.buildHdfsConfiguration()
-//          )
+          writeToHdfs(
+            linesToWrite=csvLines,
+            path=settings.buildHdfsFilePath(),
+            configuration=settings.buildHdfsConfiguration()
+          )
 
-          writeFile("data.csv", csvLines)
+//          writeFile("data.csv", csvLines)
           println("File is written")
         }
       }
@@ -45,15 +47,15 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
     FetchTask(
       task = task,
       firstDelayTime = 0,
-      repeateRate = 1,
-      TimeUnit.MINUTES
+      repeateRate = 20,
+      TimeUnit.SECONDS
     )
 
   }
 
   private def makeRequest(page: Int) = {
     basicRequest
-      .get(uri"${settings.config().hh().userAgentHeader()}$page")
+      .get(uri"https://api.hh.ru/vacancies?area=2&vacancy_search_order=publication_time&per_page=100&page=$page")
       .header("User-Agent", settings.config().hh().userAgentHeader())
       .send()
   }
