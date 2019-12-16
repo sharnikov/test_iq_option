@@ -22,7 +22,7 @@ trait CsvConverter {
         .append(f"${item.area.name};")
         .append(f"${item.salary.flatMap(_.from).dv};")
         .append(f"${item.salary.flatMap(_.to).dv};")
-        .append(f"${item.salary.map(_.currency).dv};")
+        .append(f"${item.salary.flatMap(_.currency).dv};")
         .append(f"${item.salary.flatMap(_.gross).dv};")
 
         .append(f"${item.address.flatMap(_.street).dv};")
