@@ -31,7 +31,9 @@ lazy val root = (project in file("."))
       "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2",
       "com.databricks" %% "spark-csv" % "1.5.0",
       "com.typesafe" % "config" % "1.3.3",
-      "com.iheart" %% "ficus" % "1.4.0"
-    )
+      "com.iheart" %% "ficus" % "1.4.0",
+      "org.slf4j" % "slf4j-simple" % "1.7.29"
+
+)
   )
 

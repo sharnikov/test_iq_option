@@ -48,9 +48,9 @@ class VacanciesFetchTaskFactory(config: AppConfig) extends FetchTaskFactory
 
     FetchTask(
       task = task,
-      firstDelayTime = 30,
-      repeateRate = 30,
-      TimeUnit.SECONDS
+      firstDelayTime = config.scheduler().delay().toMillis,
+      repeateRate = config.scheduler().repeatTime().toMillis,
+      TimeUnit.MILLISECONDS
     )
 
   }

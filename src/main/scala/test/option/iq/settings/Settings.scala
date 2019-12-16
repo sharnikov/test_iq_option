@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.{LocalFileSystem, Path}
 import org.apache.hadoop.hdfs.DistributedFileSystem
 
 import scala.concurrent.duration.Duration
+import test.option.iq.settings.AppConfig._
 
 object AppConfig {
   implicit class duration(duration: java.time.Duration) {
@@ -17,11 +18,23 @@ object AppConfig {
 trait AppConfig {
   def hh(): HH
   def hdfs(): Hdfs
+  def scheduler(): Scheduler
 }
 
 class AppConfigImpl(config: Config) extends AppConfig {
-  override def hh(): HH = new HHSettings(config.as[Config]("hh"))
+  override def hh(): HH = new HHImpl(config.as[Config]("hh"))
   override def hdfs(): Hdfs = new HdfsImpl(config.as[Config]("hdfs"))
+  override def scheduler(): Scheduler = new SchedulerImpl(config.as[Config]("scheduler"))
+}
+
+trait Scheduler {
+  def delay(): Duration
+  def repeatTime(): Duration
+}
+
+class SchedulerImpl(config: Config) extends Scheduler {
+  override def delay(): Duration = config.getDuration("delay").toScalaDuration()
+  override def repeatTime(): Duration = config.getDuration("repeat.interval").toScalaDuration()
 }
 
 trait HH {
@@ -30,7 +43,7 @@ trait HH {
   def pagesAmount(): Int
 }
 
-class HHSettings(config: Config) extends HH {
+class HHImpl(config: Config) extends HH {
   override def userAgentHeader(): String = config.getString("user-agent-header")
   override def restUrl(): String = config.getString("rest-url")
   override def pagesAmount(): Int = config.getInt("pages-amount")
