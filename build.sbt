@@ -33,7 +33,6 @@ lazy val root = (project in file("."))
       "com.typesafe" % "config" % "1.3.3",
       "com.iheart" %% "ficus" % "1.4.0",
       "org.slf4j" % "slf4j-simple" % "1.7.29"
-
-)
+    )
   )
 
