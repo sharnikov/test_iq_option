@@ -1,30 +1,56 @@
 package test.option.iq.settings
 
+import com.typesafe.config.Config
+import net.ceedubs.ficus.Ficus._
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{LocalFileSystem, Path}
 import org.apache.hadoop.hdfs.DistributedFileSystem
 
-trait Settings {
-  def buildHdfsConfiguration(): Configuration
-  def buildHdfsFilePath(): Path
-  def config(): Config
+import scala.concurrent.duration.Duration
+
+object AppConfig {
+  implicit class duration(duration: java.time.Duration) {
+    def toScalaDuration() = Duration.fromNanos(duration.toNanos)
+  }
 }
 
-class AppSettings extends Settings {
+trait AppConfig {
+  def hh(): HH
+  def hdfs(): Hdfs
+}
 
-  override def buildHdfsConfiguration(): Configuration = {
+class AppConfigImpl(config: Config) extends AppConfig {
+  override def hh(): HH = new HHSettings(config.as[Config]("hh"))
+  override def hdfs(): Hdfs = new HdfsImpl(config.as[Config]("hdfs"))
+}
+
+trait HH {
+  def userAgentHeader(): String
+  def restUrl(): String
+  def pagesAmount(): Int
+}
+
+class HHSettings(config: Config) extends HH {
+  override def userAgentHeader(): String = config.getString("user-agent-header")
+  override def restUrl(): String = config.getString("rest-url")
+  override def pagesAmount(): Int = config.getInt("pages-amount")
+}
+
+trait Hdfs {
+  def path(): Path
+  def configuration(): Configuration
+}
+
+class HdfsImpl(config: Config) extends Hdfs {
+  override def path(): Path = new Path(config.getString("path"))
+
+  override def configuration(): Configuration = {
     val conf = new Configuration()
-    val url = "hdfs://172.16.0.2:9000/"
+    val url = config.getString("address")
     conf.set("fs.defaultFS", url)
     conf.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
     conf.set("fs.file.impl", classOf[LocalFileSystem].getName)
 
     conf
   }
-
-  override def buildHdfsFilePath(): Path = {
-    new Path("/data.csv")
-  }
-
-  override def config(): Config = new AppConfig()
 }

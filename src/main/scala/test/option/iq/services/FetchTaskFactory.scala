@@ -1,11 +1,13 @@
 package test.option.iq.services
 
 import java.util.concurrent.TimeUnit
+
+import com.typesafe.scalalogging.LazyLogging
 import spray.json._
 import sttp.client.asynchttpclient.future.AsyncHttpClientFutureBackend
 import sttp.client.{Response, basicRequest, _}
 import test.option.iq.services.FetchTaskFactory.FetchTask
-import test.option.iq.settings.{MainContext, Settings}
+import test.option.iq.settings.{AppConfig, MainContext}
 import test.option.iq.utils.CsvConverter
 import test.option.iq.utils.JsonParsers._
 import test.option.iq.Vacancies
@@ -16,10 +18,11 @@ trait FetchTaskFactory {
     def getFetchTask(): FetchTask
 }
 
-class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
+class VacanciesFetchTaskFactory(config: AppConfig) extends FetchTaskFactory
     with MainContext
     with CsvConverter
-    with FilesWriter {
+    with FilesWriter
+    with LazyLogging {
 
   private implicit val sttpBackend = AsyncHttpClientFutureBackend()
 
@@ -27,25 +30,25 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
 
     val task = new Runnable {
       override def run(): Unit = {
-        println("Start fetching")
-        Future.sequence((0 to 19).map(makeRequest)).map { requestsResult =>
+        logger.info("Start fetching data")
+        val pagesInterval = 0 to config.hh().pagesAmount()
+        Future.sequence(pagesInterval.map(makeRequest)).map { requestsResult =>
           val items = extractItems(requestsResult)
           val csvLines = itemsToCsv(items)
           writeToHdfs(
             linesToWrite=csvLines,
-            path=settings.buildHdfsFilePath(),
-            configuration=settings.buildHdfsConfiguration()
+            path=config.hdfs().path(),
+            configuration=config.hdfs().configuration()
           )
 
-//          writeFile("data.csv", csvLines)
-          println(s"File is written time is ${System.currentTimeMillis()}")
+          logger.info("File is written time to hdfs")
         }
       }
     }
 
     FetchTask(
       task = task,
-      firstDelayTime = 30,
+      firstDelayTime = 0,
       repeateRate = 30,
       TimeUnit.SECONDS
     )
@@ -54,8 +57,8 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
 
   private def makeRequest(page: Int) = {
     basicRequest
-      .get(uri"https://api.hh.ru/vacancies?area=2&vacancy_search_order=publication_time&per_page=100&page=$page")
-      .header("User-Agent", settings.config().hh().userAgentHeader())
+      .get(uri"${config.hh().restUrl()}$page")
+      .header("User-Agent", config.hh().userAgentHeader())
       .send()
   }
 
@@ -64,8 +67,8 @@ class VacanciesFetchTaskFactory(settings: Settings) extends FetchTaskFactory
       case Right(result) =>
         result.parseJson.convertTo[Vacancies].items
 
-      case Left(shit) =>
-        println(shit)
+      case Left(error) =>
+        logger.error(error)
         Nil
     }
   }

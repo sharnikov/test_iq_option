@@ -5,6 +5,7 @@ import java.net.URI
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.io.IOUtils
 
 trait FilesWriter {
 
@@ -21,21 +22,21 @@ trait FilesWriter {
     try {
       linesToWrite.foreach(writer.write)
     } finally {
-      writer.close()
-      output.close()
-      hdfs.close()
+      IOUtils.closeStream(writer)
+      IOUtils.closeStream(output)
+      IOUtils.closeStream(hdfs)
     }
   }
 
   def writeFile(filename: String,
                 linesToWrite: Seq[String]): Unit = {
     val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
+    val bufferedWriter = new BufferedWriter(new FileWriter(file))
 
     try {
-      linesToWrite.foreach(bw.write)
+      linesToWrite.foreach(bufferedWriter.write)
     } finally {
-      bw.close()
+      IOUtils.closeStream(bufferedWriter)
     }
   }
 }

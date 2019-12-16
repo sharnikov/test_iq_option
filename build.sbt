@@ -27,7 +27,11 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.7",
       "com.typesafe.akka" %% "akka-stream" % "2.5.20",
       "io.spray" %% "spray-json" % "1.3.5",
-      "org.apache.hadoop" % "hadoop-client" % "3.2.1"
+      "org.apache.hadoop" % "hadoop-client" % "3.2.1",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2",
+      "com.databricks" %% "spark-csv" % "1.5.0",
+      "com.typesafe" % "config" % "1.3.3",
+      "com.iheart" %% "ficus" % "1.4.0"
     )
   )
 
